@@ -47,7 +47,7 @@ class Kernel extends HttpKernel
             \Illuminate\Routing\Middleware\ThrottleRequests::class.':api',
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
             \Illuminate\Http\Middleware\HandleCors::class,
-            //CORS::class
+            CORS::class
             //'jwt.auth' => \Tymon\JWTAuth\Http\Middleware\Authenticate::class,
         ],
     ];
@@ -74,6 +74,6 @@ class Kernel extends HttpKernel
         'admin' => CheckAdminRole::class,
         'doctor' => CheckDoctorRole::class,
         'client' => CheckClientRole::class,
-        'cors' => \App\Http\Middleware\Cors::class
+        'cors' => \App\Http\Middleware\CORS::class
     ];
 }

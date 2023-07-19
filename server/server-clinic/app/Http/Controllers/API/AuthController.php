@@ -12,7 +12,8 @@ class AuthController extends Controller
 { 
     public function __construct()
     {
-        $this->middleware('auth:api')->except('register','signup');
+        //$this->middleware('cors');
+        //$this->middleware('auth:api')->except('register','login');
     }
 
     public function register(Request $request){
@@ -31,7 +32,8 @@ class AuthController extends Controller
             'role'=>$validatedData['role']
         ]);
         $token=auth('api')->attempt($request->only(['email','password']));
-        return $this->responseWithToken($token);
+        $res =  $this->responseWithToken($token);
+        return response()->json($res);
     }
 
     public function docRegister(Request $request){
@@ -53,7 +55,7 @@ class AuthController extends Controller
             'doctor_id'=>$user->id,
             'speciality'=> $validatedData['speciality'],
         ]);
-        return response()->json(['msg'=>'Doctor added']);
+        return response()->json('Doctor added');
     }
 
     public function updateDoctor(Request $request){
@@ -83,15 +85,18 @@ class AuthController extends Controller
                 'speciality'=> $validatedData['speciality'],
             ]);
         }
-        return response()->json(['msg'=>'Update completed']);
+        return response()->json('Update completed');
     }
 
-    public function signup(Request $request){
-        $credentials = $request->only(['email','password']);
+    public function login(Request $request){
+        $credentials= [];
+        $credentials['email']= $request->json('email');
+        $credentials['password']= $request->json('password');
         if(!$token=auth('api')->attempt($credentials)){
-            return response()->json(['msg'=>'Unauthorized'],401);
+            return response()->json('Unauthorized',401);
         }
-        return $this->responseWithToken($token);
+        $res =  $this->responseWithToken($token);
+        return response()->json($res);
     }
 
     public function changePassword(Request $request)
@@ -102,10 +107,11 @@ class AuthController extends Controller
         {
             $user->password=Hash::make($credentials['newPassword']);
             $user->save();
-            return response()->json(['msg'=>'Password changed']);
+            return response()->json('Password changed');
         }
-        return response()->json(['msg'=>'Incorrect email']);
+        return response()->json('Incorrect email');
     }
+
     public function updateUser(Request $request){
         $user = User::find(auth()->user()->id);
         $validatedData = $request->validate([
@@ -120,7 +126,7 @@ class AuthController extends Controller
             'role'=> $validatedData['role'],
         ]);
         $user->save();
-        return response()->json(['msg'=>'Changed success']);
+        return response()->json('Changed success');
     }
 
     public function user(){
@@ -129,18 +135,21 @@ class AuthController extends Controller
 
     public function logout(){
         auth('api')->logout();
-        return response()->json(['msg'=>'LogOut success']);
+        return response()->json('LogOut success');
     }
 
     public function refresh(){
         return $this->responseWithToken(auth('api')->refresh());
     }
 
-    protected function responseWithToken($token){
-            return response()->json([
-                'access_token' => $token,
-                'type'=>'Bearer',
-                'expires_in'=> config('jwt.ttl')*60
-            ]);
+    public function responseWithToken($token){
+        $res = (object)[
+            'access_token' => $token,
+            'type'=>'Bearer',
+            'user'=>auth()->user(),
+            'expires_in'=> config('jwt.ttl')*60
+        ];
+        
+        return $res;
     }
 }

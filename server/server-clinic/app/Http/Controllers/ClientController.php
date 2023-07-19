@@ -18,24 +18,24 @@ class ClientController extends Controller
         $rating=DoctorRating::create(['Client_id'=>$cltId,
                                         'Doctor_id'=>$request->input('docId'),
                                         'Rate'=>$request->input('rate')]);
-        return response()->json(['msg'=>'Rate added']);
+        return response()->json('Rate added');
     }
     public function updateRate(Request $request){
         $rate=DoctorRating::find($request->input('rateId'));
         $rate->Rate=$request->input('newRate');
         $rate->save();
-        return response()->json(['msg'=>'Rate edited']);
+        return response()->json('Rate edited');
     }
 
     public function destroyRate(Request $request){
         $rate=DoctorRating::find($request->input('rateId'));
         $rate->delete();
-        return response()->json(['msg'=>'Rate deleted']);
+        return response()->json('Rate deleted');
     }
 
     public function getCardsByClientId(Request $request){
         $cltId = auth()->user()->id;
         $cards = Card::where('Client_id',$cltId)->get();
-        return response()->json(['cards'=>$cards]);
+        return response()->json($cards);
     }
 }

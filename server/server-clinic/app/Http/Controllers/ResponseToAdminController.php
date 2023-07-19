@@ -19,13 +19,13 @@ class ResponseToAdminController extends Controller
             'type'=>$request->input('type'),
             'values'=>$request->input('values'),
         ]);
-        return response()->json(['msg'=>'Response send']);
+        return response()->json('Response send');
     }
     public function destroyResponse(Request $request)
     {
         $response = ResponseToAdmin::find($request->input('respId'));
         $response->delete();
-        return response()->json(['msg'=>'Response destroy']);
+        return response()->json('Response destroy');
     }
    
 }

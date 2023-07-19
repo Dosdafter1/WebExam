@@ -22,7 +22,7 @@ class AdminController extends Controller
             'Visit_date'=>$request->input('date'),
             'Visit_time'=>$request->input('time'),
         ]);
-        return response()->json(['msg'=>'card added']);
+        return response()->json('Dard added');
     }
 
     public function updateCard(Request $request){
@@ -34,22 +34,24 @@ class AdminController extends Controller
             'Visit_date'=>$request->input('date'),
             'Visit_time'=>$request->input('time'),
         ]);
+        $card->save();
+        return response()->json('Card edited');
     }
     
     public function destroyCard(Request $request){
         $card = Card::find($request->input('cardId'));
         $card->delete();
-        return response()->json(['msg'=>'Card deleted']);
+        return response()->json('Card deleted');
     }
 
     public function getCards(){
         $cards = Card::get();
-        return response()->json(['cards'=>$cards]);
+        return response()->json($cards);
     }
 
     public function getCard($id){
         $card = Card::find($id);
-        return response()->json(['card'=>$card]);
+        return response()->json($card);
     }
 
 
@@ -57,19 +59,19 @@ class AdminController extends Controller
         $res = ResponseToAdmin::find($request->input('responseId'));
         $res->completed=true;
         $res->save();
-        return response()->json(['msg'=>'Response completed']);
+        return response()->json('Response completed');
     }
 
     public function getResponses()
     {
         $res=ResponseToAdmin::get();
-        return response()->json(['responses'=>$res]);
+        return response()->json($res);
     }
 
     public function getNotCompletedResponse()
     {
         $res=ResponseToAdmin::where('completed',false)->get();
-        return response()->json(['responses'=>$res]);
+        return response()->json($res);
     }
 
 }
