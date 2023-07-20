@@ -29,7 +29,7 @@ Route::prefix('auth')->controller(AuthController::class)->group(function (){
     Route::post('login','login');
     Route::post('logout','logout');
     Route::post('refresh','refresh');
-    Route::middleware('admin')->post('docregister','docRegister');
+    Route::post('docregister','docRegister')->middleware('admin');
     Route::post('update-user','updateUser');
     Route::middleware('doctor')->post('update-doctor','updateDoctor');//+
     Route::post('change-password','changePassword');
@@ -84,4 +84,5 @@ Route::post('testP', function(Request $request){
 Route::prefix('test')->controller(TestController::class)->group(function (){
     Route::post('testC','testC');//-
     Route::get('testL','testL');
+    Route::get('login','login');
 });

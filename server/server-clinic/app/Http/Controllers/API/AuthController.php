@@ -12,8 +12,8 @@ class AuthController extends Controller
 { 
     public function __construct()
     {
-        //$this->middleware('cors');
-        //$this->middleware('auth:api')->except('register','login');
+        $this->middleware('cors');
+        $this->middleware('auth:api')->except('register','login');
     }
 
     public function register(Request $request){
@@ -89,9 +89,10 @@ class AuthController extends Controller
     }
 
     public function login(Request $request){
-        $credentials= [];
-        $credentials['email']= $request->json('email');
-        $credentials['password']= $request->json('password');
+        $credentials = [
+            'email' => $request->json('email'),
+            'password' => $request->json('password')
+        ];
         if(!$token=auth('api')->attempt($credentials)){
             return response()->json('Unauthorized',401);
         }
@@ -130,7 +131,10 @@ class AuthController extends Controller
     }
 
     public function user(){
-        return response()->json(auth()->user());
+        $res = (object)[
+            'user'=>auth('api')->user()
+        ];
+        return response()->json($res);
     }
 
     public function logout(){
@@ -142,11 +146,10 @@ class AuthController extends Controller
         return $this->responseWithToken(auth('api')->refresh());
     }
 
-    public function responseWithToken($token){
+    protected function responseWithToken($token){
         $res = (object)[
             'access_token' => $token,
             'type'=>'Bearer',
-            'user'=>auth()->user(),
             'expires_in'=> config('jwt.ttl')*60
         ];
         

@@ -74,6 +74,7 @@ class Kernel extends HttpKernel
         'admin' => CheckAdminRole::class,
         'doctor' => CheckDoctorRole::class,
         'client' => CheckClientRole::class,
-        'cors' => \App\Http\Middleware\CORS::class
+        'cors' => \App\Http\Middleware\CORS::class,
+        'token' => \App\Http\Middleware\CheckMyTokenHeader::class
     ];
 }
