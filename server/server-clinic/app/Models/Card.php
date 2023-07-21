@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * @property int    $id
@@ -34,5 +35,17 @@ class Card extends Model
     public function getDoctor($id) {
         $doctors = User::where('role',3)->find($id);
         return $doctors;
+    }
+    protected static function booted()
+    {
+        static::deleting(function(Card $card){
+            foreach($card->getResponses()->get() as $res)
+            {
+                $res->delete();
+            }
+        });
+    }
+    public function getResponses():HasMany{
+        return $this->hasMany(ResponseToAdmin::class);
     }
 }

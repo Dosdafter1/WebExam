@@ -15,31 +15,44 @@ class AdminController extends Controller
     }
 
     public function addCard(Request $request){
+        $date = Card::where('Visit_date', $request->json('date'))->get()->first();
+        $time = Card::where('Visit_time', $request->json('time'))->get()->first();
+        if($date!==null && $time!==null)
+        {
+            return response()->json('Time is busy',401);
+        }
         $card = Card::create([
-            'Client_id'=>$request->input('clientId'),
-            'Doctor_id'=>$request->input('doctorId'),
-            'Symptoms'=>$request->input('symptoms'),
-            'Visit_date'=>$request->input('date'),
-            'Visit_time'=>$request->input('time'),
+            'Client_id'=>$request->json('clientId'),
+            'Doctor_id'=>$request->json('doctorId'),
+            'Symptoms'=>$request->json('symptoms'),
+            'Visit_date'=>$request->json('date'),
+            'Visit_time'=>$request->json('time'),
         ]);
-        return response()->json('Dard added');
+        return response()->json('Card added');
     }
 
     public function updateCard(Request $request){
-        $card = Card::find($request->input('cardId'));
+        $date = Card::where('Visit_date', $request->json('date'))->get()->first();
+        $time = Card::where('Visit_time', $request->json('time'))->get()->first();
+        var_dump($time);
+        if($date!=null && $time!=null)
+        {
+            return response()->json('Time is busy',401);
+        }
+        $card = Card::find($request->json('cardId'));
         $card->fill([
-            'Client_id'=>$request->input('clientId'),
-            'Doctor_id'=>$request->input('doctorId'),
-            'Symptoms'=>$request->input('symptoms'),
-            'Visit_date'=>$request->input('date'),
-            'Visit_time'=>$request->input('time'),
+            'Client_id'=>$request->json('clientId'),
+            'Doctor_id'=>$request->json('doctorId'),
+            'Symptoms'=>$request->json('symptoms'),
+            'Visit_date'=>$request->json('date'),
+            'Visit_time'=>$request->json('time'),
         ]);
         $card->save();
         return response()->json('Card edited');
     }
     
-    public function destroyCard(Request $request){
-        $card = Card::find($request->input('cardId'));
+    public function destroyCard(Request $request,$id){
+        $card = Card::find($id);
         $card->delete();
         return response()->json('Card deleted');
     }
@@ -56,7 +69,7 @@ class AdminController extends Controller
 
 
     public function confirmResponse(Request $request){
-        $res = ResponseToAdmin::find($request->input('responseId'));
+        $res = ResponseToAdmin::find($request->json('responseId'));
         $res->completed=true;
         $res->save();
         return response()->json('Response completed');
@@ -64,13 +77,15 @@ class AdminController extends Controller
 
     public function getResponses()
     {
-        $res=ResponseToAdmin::get();
+        $responses=ResponseToAdmin::get();
+        $res = (object)['responses'=>$responses];
         return response()->json($res);
     }
 
     public function getNotCompletedResponse()
     {
-        $res=ResponseToAdmin::where('completed',false)->get();
+        $responses=ResponseToAdmin::where('completed',false)->get();
+        $res = (object)['responses'=>$responses];
         return response()->json($res);
     }
 

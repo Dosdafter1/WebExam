@@ -17,13 +17,17 @@ class AuthController extends Controller
     }
 
     public function register(Request $request){
-        $validatedData = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|unique:users',
-            'password' => 'required|string',
-            'phone' => 'required|string',
-            'role' => 'required|min:1|max:3'
-        ]);
+        if(User::where('email',"{$request->json('email')}")->get()->first()!==null)
+        {
+            return response()->json('Email exist', 401);
+        }
+        $validatedData =[
+            'name' => $request->json('name'),
+            'email' => $request->json('email'),
+            'password' => $request->json('password'),
+            'phone' => $request->json('phone'),
+            'role' => $request->json('role')
+        ];
         $user=User::create([
             'name' => $validatedData['name'],
             'email' => $validatedData['email'],
@@ -31,19 +35,27 @@ class AuthController extends Controller
             'phone' =>  $validatedData['phone'],
             'role'=>$validatedData['role']
         ]);
-        $token=auth('api')->attempt($request->only(['email','password']));
+        $credentials = [
+            'email' => $request->json('email'),
+            'password' => $request->json('password')
+        ];
+        $token=auth('api')->attempt($credentials);
         $res =  $this->responseWithToken($token);
         return response()->json($res);
     }
 
     public function docRegister(Request $request){
-        $validatedData = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|unique:users',
-            'password' => 'required|string',
-            'phone' => 'required|string',
-            'speciality'=>'required|string'
-        ]);
+        if(User::where('email',"{$request->json('email')}")->get()->first()!==null)
+        {
+            return response()->json('Email exist', 401);
+        }
+        $validatedData =[
+            'name' => $request->json('name'),
+            'email' => $request->json('email'),
+            'password' => $request->json('password'),
+            'phone' => $request->json('phone'),
+            'speciality' => $request->json('speciality')
+        ];
         $user=User::create([
             'name' => $validatedData['name'],
             'email' => $validatedData['email'],
@@ -60,11 +72,11 @@ class AuthController extends Controller
 
     public function updateDoctor(Request $request){
         $doc = User::find(auth()->user()->id);
-        $validatedData = $request->validate([
-            'name' => 'required|string|max:255',
-            'phone' => 'required|string',
-            'speciality'=>'required|string'
-        ]);
+        $validatedData = [
+            'name' => $request->json('name'),
+            'phone' => $request->json('phone'),
+            'speciality'=>$request->json('speciality')
+        ];
         
         $doc->fill([
             'name' => $validatedData['name'],
@@ -102,32 +114,33 @@ class AuthController extends Controller
 
     public function changePassword(Request $request)
     {
-        $credentials = $request->only(['email','newPassword']);
-        $user = User::find(auth()->user()->id);
+        $credentials = [
+            'email'=>$request->json('email'),
+            'newPassword'=>$request->json('password')
+        ];
+        $user = User::find(auth('api')->user()->id);
         if($user->email==$credentials['email'])
         {
             $user->password=Hash::make($credentials['newPassword']);
             $user->save();
             return response()->json('Password changed');
         }
-        return response()->json('Incorrect email');
+        return response()->json('Incorrect email',401);
     }
 
     public function updateUser(Request $request){
-        $user = User::find(auth()->user()->id);
-        $validatedData = $request->validate([
-            'name' => 'required|string|max:255',
-            'phone' => 'required|string',
-            'role' => 'required|min:1|max:3'
-        ]);
+        $user = User::find(auth('api')->user()->id);
         
+        $validatedData = [
+            'name' => $request->json('name'),
+            'phone' => $request->json('phone'),
+        ];
         $user->fill([
             'name' => $validatedData['name'],
             'phone' => $validatedData['phone'],
-            'role'=> $validatedData['role'],
         ]);
         $user->save();
-        return response()->json('Changed success');
+        return response()->json('Updated!');
     }
 
     public function user(){

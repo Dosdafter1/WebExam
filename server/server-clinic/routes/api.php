@@ -25,52 +25,51 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 //+
 Route::prefix('auth')->controller(AuthController::class)->group(function (){
-    Route::post('register','register');
+    Route::put('register','register');
     Route::post('login','login');
     Route::post('logout','logout');
     Route::post('refresh','refresh');
-    Route::post('docregister','docRegister')->middleware('admin');
-    Route::post('update-user','updateUser');
+    Route::put('docregister','docRegister')->middleware('admin');
+    Route::put('update-user','updateUser');
     Route::middleware('doctor')->post('update-doctor','updateDoctor');//+
-    Route::post('change-password','changePassword');
+    Route::put('change-password','changePassword');
     Route::get('user','user');
 });
 
 Route::prefix('admin')->controller(AdminController::class)->group(function (){
     Route::post('addCard','addCard');
-    Route::post('updateCard','updateCard');
-    Route::post('destroyCard','destroyCard');
+    Route::put('updateCard','updateCard');
+    Route::delete('destroyCard/{id}','destroyCard');
     Route::get('cards','getCards');
     Route::post('card/{id}','getCard');
-    Route::post('confirm','confirmResponse');//+
+    Route::put('confirm','confirmResponse');//+
     Route::get('responses','getResponses');//+
     Route::get('not-completed-response','getNotCompletedResponse');//+
 });
 
 Route::prefix('admin-res')->controller(ResponseToAdminController::class)->group(function (){
     Route::post('addResponse','addResponse');//+
-    Route::post('destroyResponse','destroyResponse');//+
+    Route::delete('destroyResponse/{id}','destroyResponse');//+
 });
 
 Route::prefix('doctor')->controller(DoctorController::class)->group(function (){
-    Route::post('confirm','confirmCard');
+    Route::put('confirm','confirmCard');
     Route::post('rating','getRating');//+
-    Route::post('cards','getCardsByDoctorId');
-
+    Route::get('cards','getCardsByDoctorId');
     Route::get('doctors','getDoctors');//+
-    Route::get('test','test');
-
+    Route::get('clients','getClients');
 });
 
 Route::prefix('client')->controller(ClientController::class)->group(function (){
-    Route::post('addRate','addRate');//-
-    Route::post('updateRate','updateRate');//+
-    Route::post('destroyRate','destroyRate');//+
-    Route::post('cards','getCardsByClientId');
+    Route::post('add-rate','addRate');//-
+    Route::put('update-rate','updateRate');//+
+    Route::delete('destroy-rate','destroyRate');//+
+    Route::get('cards','getCardsByClientId');
+    
 });
 
 
-
+/*
 Route::get('test', function(){
 
     return response()->json('ok');
@@ -86,3 +85,4 @@ Route::prefix('test')->controller(TestController::class)->group(function (){
     Route::get('testL','testL');
     Route::get('login','login');
 });
+*/

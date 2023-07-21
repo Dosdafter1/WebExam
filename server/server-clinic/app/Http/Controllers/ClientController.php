@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Card;
 use App\Models\DoctorRating;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class ClientController extends Controller
@@ -14,28 +15,32 @@ class ClientController extends Controller
         $this->middleware('client');
     }
     public function addRate(Request $request){
-        $cltId=auth()->user()->id;
+        $cltId=auth('api')->user()->id;
         $rating=DoctorRating::create(['Client_id'=>$cltId,
-                                        'Doctor_id'=>$request->input('docId'),
-                                        'Rate'=>$request->input('rate')]);
+                                        'Doctor_id'=>$request->json('docId'),
+                                        'Rate'=>$request->json('rate')]);
         return response()->json('Rate added');
     }
     public function updateRate(Request $request){
-        $rate=DoctorRating::find($request->input('rateId'));
-        $rate->Rate=$request->input('newRate');
+        $rate=DoctorRating::find($request->json('rateId'));
+        $rate->Rate=$request->json('newRate');
         $rate->save();
         return response()->json('Rate edited');
     }
 
     public function destroyRate(Request $request){
-        $rate=DoctorRating::find($request->input('rateId'));
+        $rate=DoctorRating::find($request->json('rateId'));
         $rate->delete();
         return response()->json('Rate deleted');
     }
 
     public function getCardsByClientId(Request $request){
-        $cltId = auth()->user()->id;
+        $cltId = auth('api')->user()->id;
         $cards = Card::where('Client_id',$cltId)->get();
-        return response()->json($cards);
+        $res = [
+            'cards'=>$cards,
+        ];
+        return response()->json($res);
     }
+   
 }

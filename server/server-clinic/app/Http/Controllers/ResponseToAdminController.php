@@ -14,16 +14,16 @@ class ResponseToAdminController extends Controller
     public function addResponse(Request $request)
     {
         $response = ResponseToAdmin::create([
-            'user_id'=>auth()->user()->id,
-            'card_id'=>$request->input('cardId'),
-            'type'=>$request->input('type'),
-            'values'=>$request->input('values'),
+            'user_id'=>auth('api')->user()->id,
+            'card_id'=>$request->json('cardId'),
+            'type'=>$request->json('type'),
+            'values'=>$request->json('values'),
         ]);
         return response()->json('Response send');
     }
-    public function destroyResponse(Request $request)
+    public function destroyResponse(Request $request, $id)
     {
-        $response = ResponseToAdmin::find($request->input('respId'));
+        $response = ResponseToAdmin::find($id);
         $response->delete();
         return response()->json('Response destroy');
     }
